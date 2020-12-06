@@ -1,14 +1,15 @@
+
 <template>
   <div class="cinema_body">
     <ul>
-      <li>
+      <li v-for="data in datalist" :key="data.index">
         <div>
-          <span>大地影院</span>
-          <span class="q"><span class="price"> 22.9 </span>元起</span>
+          <span>{{data.name}}</span>
+          <span class="q"><span class="price"> {{data.lowPrice/100}} </span>元起</span>
         </div>
         <div class="address">
-          <span>经济开发区</span>
-          <span>1323.2km</span>
+          <span>{{data.address}}</span><br>
+          <span>{{data.Distance.toFixed(2)}}km</span>
         </div>
         <div class="card">
           <div>小吃</div>
@@ -19,8 +20,28 @@
   </div>
 </template>
 <script>
+import Axios from "axios";
 export default {
   name: "CinemaList",
+  data(){
+    return{
+      datalist:[]
+    }
+  },
+  mounted() {
+    Axios({
+      url: `https://m.maizuo.com/gateway?cityId=430600&ticketFlag=1&k=962892`,
+
+      headers: {
+        "X-Client-Info":
+          '{"a":"3000","ch":"1002","v":"5.0.4","e":"1606488708335226492420097"}',
+        "X-Host": "mall.film-ticket.cinema.list",
+      },
+    }).then(res=>{
+      this.datalist=res.data.data.cinemas;
+      console.log(this.datalist);
+    });
+  },
 };
 </script>
 <style scoped>
@@ -69,6 +90,5 @@ export default {
 }
 .cinema_body .card {
   color: #589daf;
-  
 }
 </style>
