@@ -1,12 +1,12 @@
 <template>
     <div class="movie_body">
         <ul>
-            <li>
-                <div class="pic_show"><img src=""></div>
-                <div class="info_list">
-                    <h2>无名之辈</h2>
-                    <p>观众评分<span class="grade">9.2</span></p>
-                    <p>主演:陈建斌</p>
+            <li v-for="data in datalist" :key="data.index">
+                <div class="pic_show"><img  :src="data.poster" ></div>
+                <div class="info_list" >
+                    <h2>{{data.name}}</h2>
+                    <p>观众评分<span class="grade">{{data.grade}}</span></p>
+                    <p>主演:{{data.actors|actorsfilter}}</p>
                     <p>今天55家影院放映607场</p>
                 </div>
                 <div class="btn_mall">
@@ -17,8 +17,34 @@
     </div>
 </template>
 <script>
+import Axios from "axios";
+import Vue from "vue"
+Vue.filter("actorsfilter",function(data){
+    let newlist=data.map((item)=>item.name)
+    return newlist.join(" ")
+})
 export default {
-    name:"NowPlaying"
+    name:"NowPlaying",
+    data(){
+    return{
+      datalist:[],
+    }
+  },
+  mounted() {
+    Axios({
+      url:
+        "https://m.maizuo.com/gateway?cityId=430900&pageNum=1&pageSize=10&type=1&k=2272100",
+      headers: {
+        "X-Client-Info":
+          '{"a":"3000","ch":"1002","v":"5.0.4","e":"1606488708335226492420097"}',
+        "X-Host": "mall.film-ticket.film.list",
+      },
+    }).then(res=>{
+      this.datalist=res.data.data.films,
+      console.log(this.datalist);
+    });
+    
+  },
 }
 </script>
 <style lang="scss" scoped>

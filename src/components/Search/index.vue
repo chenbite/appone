@@ -3,16 +3,19 @@
     <div class="search_input">
       <div class="search_input_wrapper">
         <i class="iconfont">&#xe60c;</i>
-        <input type="text" />
+        <input v-model="message" type="text" />
       </div>
     </div>
     <div class="search_result">
       <h3>电影/电视/综艺</h3>
       <ul>
-        <li>
-          <div class="img"><img src="" /></div>
+        <li v-for="data in movieList" :key="data.index">
+          <div class="img"><img :src="data.poster" /></div>
           <div class="info">
-            <p><span>无名之辈</span><span>9.2</span></p>
+            <p>
+              <span>{{ data.name }}</span
+              ><span>9.2</span>
+            </p>
             <p>A.Cool.Fish</p>
             <p>剧情·喜剧·犯罪</p>
             <p>2018-11-16</p>
@@ -23,8 +26,39 @@
   </div>
 </template>
 <script>
+import Axios from "axios";
 export default {
   name: "Search",
+  data() {
+    return {
+      message: "",
+      movieList: [],
+    };
+  },
+  watch: {
+    message(newVal) {
+      console.log(newVal);
+      Axios({
+        url:
+          "https://m.maizuo.com/gateway?cityId=430900&pageNum=1&pageSize=10&type=1&k=2272100",
+        headers: {
+          "X-Client-Info":
+            '{"a":"3000","ch":"1002","v":"5.0.4","e":"1606488708335226492420097"}',
+          "X-Host": "mall.film-ticket.film.list",
+        },
+      }).then((res) => {
+        var newlist=res.data.data.films;
+        console.log(newlist);
+        for(var i=0;i<newlist.length;i++){
+          if (newlist[i].name == newVal) {
+            this.movieList=[],
+          this.movieList.push(newlist[i])
+        }
+        }
+        
+      });
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
